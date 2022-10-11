@@ -10,6 +10,7 @@ import UIKit
 class ViewController: UIViewController {
     
     private var collectionView: UICollectionView?
+    var people = [Person]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +56,10 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
         if let jpegData = image.jpegData(compressionQuality: 0.8) {
             try? jpegData.write(to: imagePath)
         }
+        let person = Person(name: "Unknown", image: imageName)
+        people.append(person)
+        collectionView?.reloadData()
+        
         dismiss(animated: true)
     }
     
@@ -64,10 +69,26 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     }
 }
 
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let person = people[indexPath.item]
+        let ac = UIAlertController(title: "Rename Person", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        ac.addAction(UIAlertAction(title: "OK", style: .default){
+            [weak self, weak ac] _ in
+            guard let newName = ac?.textFields?[0].text else { return }
+            person.name = newName
+            self?.collectionView?.reloadData()
+        })
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(ac, animated: true)
+    }
+}
+
 extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return people.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -76,7 +97,11 @@ extension ViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         cell.backgroundColor = .white
-        cell.config(label: "Cell \(indexPath.row + 1)")
+        
+        let person = people[indexPath.item]
+        let path = getDocumentsDirectory().appending(path: person.image)
+        cell.config(label: person.name, image: path.path())
+        
         return cell
     }
     

@@ -13,7 +13,9 @@ class PersonCell: UICollectionViewCell {
     
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "house")
+        imageView.layer.borderColor = UIColor(white: 0, alpha: 0.3).cgColor
+        imageView.layer.borderWidth = 2
+        imageView.layer.cornerRadius = 3
         return imageView
     }()
     
@@ -28,6 +30,7 @@ class PersonCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.addSubview(imageView)
         contentView.addSubview(myLabel)
+        layer.cornerRadius = 7
         contentView.clipsToBounds = true
     }
     
@@ -40,8 +43,9 @@ class PersonCell: UICollectionViewCell {
         myLabel.frame = CGRect(x: 10, y: 134, width: 120, height: 40)
     }
     
-    func config(label: String){
+    func config(label: String, image:String){
         myLabel.text = label
+        imageView.image = UIImage(contentsOfFile: image)
     }
     
     override func prepareForReuse() {
